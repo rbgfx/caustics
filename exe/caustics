@@ -1,0 +1,52 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "optparse"
+require "caustics"
+
+command = ARGV.shift
+unless %w[render bench codegen preview].include?(command)
+  warn "usage: caustics render|bench|codegen|preview SCENE.rb [--size WxH] [--spp N] [--workers N] [--engine NAME,...] [-o FILE]"
+  exit 1
+end
+
+path = ARGV.shift
+raise ArgumentError, "scene file is required" unless path
+output = "out.png"
+size = [400, 225]
+spp = 4
+workers = 1
+seed = 42
+max_depth = 8
+engines = [:ruby]
+OptionParser.new do |options|
+  options.on("-o FILE") { |value| output = value }
+  options.on("--size SIZE") { |value| size = value.split("x").map(&:to_i) }
+  options.on("--spp N", Integer) { |value| spp = value }
+  options.on("--workers N", Integer) { |value| workers = value }
+  options.on("--seed N", Integer) { |value| seed = value }
+  options.on("--max-depth N", Integer) { |value| max_depth = value }
+  options.on("--engine NAME") { |value| engines = value.split(",").map { |name| name.to_sym } }
+end.parse!(ARGV)
+raise ArgumentError, "size must be WIDTHxHEIGHT" unless size.length == 2 && size.all?(&:positive?)
+load path
+scene = defined?(SCENE) ? SCENE : $scene
+raise ArgumentError, "scene file must assign SCENE or $scene" unless scene
+
+case command
+when "render"
+  raise ArgumentError, "render accepts one engine" unless engines.one?
+  Caustics.render(scene, width: size[0], height: size[1], spp: spp, max_depth: max_depth, workers: workers, seed: seed, engine: engines.first).write(output)
+  puts output
+when "bench"
+  results = Caustics.benchmark(scene, engines: engines, width: size[0], height: size[1], spp: spp, max_depth: max_depth)
+  baseline = results[:ruby] || results.values.first
+  puts "engine seconds ratio"
+  results.each do |name, seconds|
+    puts format("%s %.3fs %.2fx", name, seconds, seconds / baseline)
+  end
+when "codegen"
+  puts Caustics::Engines::ShaderCodegen.generate(scene)
+when "preview"
+  Caustics.preview(scene, width: size[0], height: size[1], spp: spp, max_depth: max_depth, seed: seed, output: output)
+end
