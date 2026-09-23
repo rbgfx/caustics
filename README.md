@@ -1,19 +1,14 @@
 # Caustics
 
-[![Gem version](https://badge.fury.io/rb/caustics.svg)](https://rubygems.org/gems/caustics)
-[![Downloads](https://img.shields.io/gem/dt/caustics?label=downloads)](https://rubygems.org/gems/caustics)
-[![CI](https://github.com/rbgfx/caustics/actions/workflows/main.yml/badge.svg)](https://github.com/rbgfx/caustics/actions/workflows/main.yml)
-[![Ruby](https://img.shields.io/badge/ruby-%3E%3D3.1-CC342D?logo=ruby&logoColor=white)](https://www.ruby-lang.org/)
-[![License](https://img.shields.io/badge/license-MIT-750014.svg)](LICENSE.txt)
-
 > A deterministic pure Ruby path tracer and teaching example.
 
-Caustics is a small ray tracer for experimenting with cameras, materials,
-textures, acceleration, and renderer backends. The Ruby engine is the reference
-implementation; optional rlsl and Metal engines cover a deliberately smaller
-shader subset.
+[![Gem version](https://badge.fury.io/rb/caustics.svg)](https://rubygems.org/gems/caustics) [![Downloads](https://img.shields.io/gem/dt/caustics?label=downloads)](https://rubygems.org/gems/caustics) [![Ruby](https://img.shields.io/badge/ruby-%3E%3D3.1-CC342D?logo=ruby&logoColor=white)](https://www.ruby-lang.org/) [![CI](https://github.com/rbgfx/caustics/actions/workflows/main.yml/badge.svg)](https://github.com/rbgfx/caustics/actions/workflows/main.yml) [![License](https://img.shields.io/badge/license-MIT-750014.svg)](LICENSE.txt)
 
-**[Features](#features) · [Installation](#installation) · [Quick start](#quick-start) · [Engines](#engines) · [Development](#development)**
+**[Features](#features) · [Installation](#installation) · [Requirements](#requirements) · [Quick start](#quick-start) · [Engines](#engines) · [Development](#development) · [License](#license) · [Website](https://rbgfx.github.io/caustics/)**
+
+---
+
+Experiment with cameras, materials, textures, acceleration, and renderer backends. The Ruby engine is the reference implementation; optional RLSL C and Metal engines support a smaller shader subset.
 
 ## Features
 
@@ -43,6 +38,11 @@ Or install the released gem:
 ~~~sh
 gem install caustics
 ~~~
+
+## Requirements
+
+- Ruby 3.1 or newer.
+- The Metal engine requires macOS with a Metal-capable device.
 
 ## Quick start
 
