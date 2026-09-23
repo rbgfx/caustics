@@ -1,14 +1,19 @@
-# Caustics
+<h1 align="center">Caustics</h1>
 
-> A deterministic pure Ruby path tracer and teaching example.
+<p align="center">A deterministic pure Ruby path tracer and teaching example.</p>
 
-[![Gem version](https://badge.fury.io/rb/caustics.svg)](https://rubygems.org/gems/caustics) [![Downloads](https://img.shields.io/gem/dt/caustics?label=downloads)](https://rubygems.org/gems/caustics) [![Ruby](https://img.shields.io/badge/ruby-%3E%3D3.1-CC342D?logo=ruby&logoColor=white)](https://www.ruby-lang.org/) [![CI](https://github.com/rbgfx/caustics/actions/workflows/main.yml/badge.svg)](https://github.com/rbgfx/caustics/actions/workflows/main.yml) [![License](https://img.shields.io/badge/license-MIT-750014.svg)](LICENSE.txt)
+<p align="center">
+  <a href="https://rubygems.org/gems/caustics"><img src="https://badge.fury.io/rb/caustics.svg" alt="Gem Version"></a>
+  <a href="https://rubygems.org/gems/caustics"><img src="https://img.shields.io/gem/dt/caustics?label=downloads" alt="Downloads"></a>
+  <a href="https://www.ruby-lang.org/"><img src="https://img.shields.io/badge/ruby-%3E%3D3.1-CC342D?logo=ruby&amp;logoColor=white" alt="Ruby Version"></a>
+  <a href="LICENSE.txt"><img src="https://img.shields.io/badge/license-MIT-750014.svg" alt="License"></a>
+</p>
 
-**[Features](#features) · [Installation](#installation) · [Requirements](#requirements) · [Quick start](#quick-start) · [Engines](#engines) · [Development](#development) · [License](#license) · [Website](https://rbgfx.github.io/caustics/)**
+[Features](#features) · [Installation](#installation) · [Quick Start](#quick-start) · [Engines](#engines)
 
----
+***
 
-Experiment with cameras, materials, textures, acceleration, and renderer backends. The Ruby engine is the reference implementation; optional RLSL C and Metal engines support a smaller shader subset.
+Caustics is a small ray tracer for experimenting with cameras, materials, textures, acceleration, and renderer backends. The Ruby engine is the reference implementation; optional RLSL and Metal engines cover a deliberately smaller shader subset.
 
 ## Features
 
@@ -39,12 +44,12 @@ Or install the released gem:
 gem install caustics
 ~~~
 
-## Requirements
+### Requirements
 
 - Ruby 3.1 or newer.
 - The Metal engine requires macOS with a Metal-capable device.
 
-## Quick start
+## Quick Start
 
 Render the included scene:
 
@@ -84,6 +89,10 @@ limits. The Metal engine requires a Metal-capable macOS host.
 bundle install
 bundle exec rake verify
 ~~~
+
+## Contributing
+
+Bug reports and pull requests are welcome at [rbgfx/caustics](https://github.com/rbgfx/caustics).
 
 ## License
 
