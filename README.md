@@ -55,8 +55,11 @@ Render the included scene:
 
 ~~~sh
 caustics render scenes/weekend.rb --size 400x225 --spp 16 --workers 4 -o out.png
+caustics render scenes/weekend.rb --size 400x225 --spp 16 --progress-gif -o progress.gif
 caustics preview scenes/weekend.rb --size 400x225 --spp 16 -o preview.png
 ~~~
+
+`--progress-gif` writes a cumulative frame after every sample. Install the optional [Flipbook](https://github.com/rbgfx/flipbook) gem to use it.
 
 Use the Ruby API directly:
 

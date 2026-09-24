@@ -6,29 +6,34 @@ require "caustics"
 
 command = ARGV.shift
 unless %w[render bench codegen preview].include?(command)
-  warn "usage: caustics render|bench|codegen|preview SCENE.rb [--size WxH] [--spp N] [--workers N] [--engine NAME,...] [-o FILE]"
+  warn "usage: caustics render|bench|codegen|preview SCENE.rb [--size WxH] [--spp N] [--workers N] [--engine NAME,...] [--progress-gif] [-o FILE]"
   exit 1
 end
 
 path = ARGV.shift
 raise ArgumentError, "scene file is required" unless path
 output = "out.png"
+output_explicit = false
 size = [400, 225]
 spp = 4
 workers = 1
 seed = 42
 max_depth = 8
 engines = [:ruby]
+progress_gif = false
 OptionParser.new do |options|
-  options.on("-o FILE") { |value| output = value }
+  options.on("-o FILE") { |value| output = value; output_explicit = true }
   options.on("--size SIZE") { |value| size = value.split("x").map(&:to_i) }
   options.on("--spp N", Integer) { |value| spp = value }
   options.on("--workers N", Integer) { |value| workers = value }
   options.on("--seed N", Integer) { |value| seed = value }
   options.on("--max-depth N", Integer) { |value| max_depth = value }
   options.on("--engine NAME") { |value| engines = value.split(",").map { |name| name.to_sym } }
+  options.on("--progress-gif") { progress_gif = true }
 end.parse!(ARGV)
 raise ArgumentError, "size must be WIDTHxHEIGHT" unless size.length == 2 && size.all?(&:positive?)
+raise ArgumentError, "spp, workers and max-depth must be positive" unless [spp, workers, max_depth].all?(&:positive?)
+raise ArgumentError, "--progress-gif is only valid with render" if progress_gif && command != "render"
 load path
 scene = defined?(SCENE) ? SCENE : $scene
 raise ArgumentError, "scene file must assign SCENE or $scene" unless scene
@@ -36,7 +41,26 @@ raise ArgumentError, "scene file must assign SCENE or $scene" unless scene
 case command
 when "render"
   raise ArgumentError, "render accepts one engine" unless engines.one?
-  Caustics.render(scene, width: size[0], height: size[1], spp: spp, max_depth: max_depth, workers: workers, seed: seed, engine: engines.first).write(output)
+  if progress_gif
+    output = "out.gif" unless output_explicit
+    raise ArgumentError, "--progress-gif output must end in .gif" unless File.extname(output).downcase == ".gif"
+    begin
+      require "flipbook"
+    rescue LoadError => error
+      raise LoadError, "caustics --progress-gif requires the optional flipbook gem", cause: error
+    end
+    accumulator = Caustics::Accumulator.new(size[0], size[1])
+    Flipbook::GIF::Writer.open(output, width: size[0], height: size[1], loop: true, palette: :per_frame) do |writer|
+      spp.times do
+        sample = Caustics.render(scene, width: size[0], height: size[1], spp: 1, max_depth: max_depth,
+                                 workers: workers, seed: seed + accumulator.samples, engine: engines.first)
+        writer.add(accumulator.add(sample), delay: Rational(1, 10))
+      end
+    end
+  else
+    Caustics.render(scene, width: size[0], height: size[1], spp: spp, max_depth: max_depth,
+                    workers: workers, seed: seed, engine: engines.first).write(output)
+  end
   puts output
 when "bench"
   results = Caustics.benchmark(scene, engines: engines, width: size[0], height: size[1], spp: spp, max_depth: max_depth)

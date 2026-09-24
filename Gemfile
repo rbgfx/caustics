@@ -7,6 +7,7 @@ gemspec
 
 gem "tessel", path: "../tessel"
 gem "rlsl", path: "../rlsl"
+gem "flipbook", path: "../flipbook"
 gem "metaco", path: "../metaco" if RUBY_PLATFORM.include?("darwin")
 
 gem "irb"

@@ -1,5 +1,10 @@
 # frozen_string_literal: true
 
+require "open3"
+require "rbconfig"
+require "tmpdir"
+require "flipbook"
+
 RSpec.describe Caustics do
   it "has a version number" do
     expect(Caustics::VERSION).not_to be nil
@@ -16,6 +21,23 @@ RSpec.describe Caustics do
     second = Caustics.render(scene, width: 8, height: 4, spp: 2, max_depth: 2, seed: 9)
 
     expect(first.bytes).to eq(second.bytes)
+  end
+
+  it "writes one accumulated frame per sample with --progress-gif" do
+    root = File.expand_path("..", __dir__)
+    scene = File.join(root, "scenes", "weekend.rb")
+    Dir.mktmpdir do |directory|
+      output = File.join(directory, "progress.gif")
+      stdout, stderr, status = Open3.capture3(ENV.to_h, RbConfig.ruby, "exe/caustics", "render", scene,
+                                               "--size", "4x3", "--spp", "3", "--max-depth", "1",
+                                               "--progress-gif", "-o", output, chdir: root)
+
+      expect(status.success?).to be(true), stderr
+      expect(stdout).to eq("#{output}\n")
+      frames = Flipbook.read(output)
+      expect(frames.length).to eq(3)
+      expect([frames.last.width, frames.last.height]).to eq([4, 3])
+    end
   end
 
   it "computes sphere hits" do
