@@ -5,10 +5,9 @@ source "https://rubygems.org"
 # Specify your gem's dependencies in caustics.gemspec
 gemspec
 
-gem "tessel", path: "../tessel"
-gem "rlsl", path: "../rlsl"
-gem "flipbook", path: "../flipbook"
-gem "metaco", path: "../metaco" if RUBY_PLATFORM.include?("darwin")
+gem "rlsl"
+gem "flipbook", ">= 0.4.0"
+gem "metaco" if RUBY_PLATFORM.include?("darwin")
 
 gem "irb"
 gem "rake", "~> 13.0"
