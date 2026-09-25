@@ -5,7 +5,7 @@ require_relative "lib/caustics/version"
 Gem::Specification.new do |spec|
   spec.name = "caustics"
   spec.version = Caustics::VERSION
-  spec.authors = ["ydah"]
+  spec.authors = ["Yudai Takada"]
   spec.email = ["t.yudai92@gmail.com"]
 
   spec.summary = "A small Ruby path tracer"
