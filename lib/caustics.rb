@@ -135,7 +135,7 @@ module Caustics
     attr_reader :center, :radius, :material
     def initialize(center:, radius:, material:)
       @center, @radius, @material = center, radius.to_f, material
-      raise ArgumentError, "sphere radius must be positive" unless @radius.positive?
+      raise ArgumentError, "sphere radius must be positive and finite" unless @radius.finite? && @radius.positive?
     end
 
     def hit(ray, minimum, maximum)
@@ -246,8 +246,10 @@ module Caustics
   class Material
     def initialize(color: Vec3.new(1, 1, 1), fuzz: 0, index: 1.5, emission: Vec3.new(0, 0, 0), kind: :lambertian)
       @index = Float(index)
-      raise ArgumentError, "refractive index must be positive" unless @index.positive?
-      @color, @fuzz, @emission, @kind = color, Float(fuzz).clamp(0, 1), emission, kind
+      raise ArgumentError, "refractive index must be positive and finite" unless @index.finite? && @index.positive?
+      fuzz = Float(fuzz)
+      raise ArgumentError, "material fuzz must be finite" unless fuzz.finite?
+      @color, @fuzz, @emission, @kind = color, fuzz.clamp(0, 1), emission, kind
     end
     attr_reader :color, :emission, :index, :kind
 
@@ -278,10 +280,11 @@ module Caustics
     attr_reader :origin, :horizontal, :vertical, :lower_left
     def initialize(from: [13, 2, 3], to: [0, 0, 0], up: [0, 1, 0], fov: 20, aspect: 16.0 / 9, aperture: 0, focus_distance: 10)
       @origin = vec(from)
-      raise ArgumentError, "camera fov must be between 0 and 180 degrees" unless fov.to_f.positive? && fov.to_f < 180
-      raise ArgumentError, "camera aspect must be positive" unless aspect.to_f.positive?
-      raise ArgumentError, "camera focus distance must be positive" unless focus_distance.to_f.positive?
-      raise ArgumentError, "camera aperture must not be negative" if aperture.to_f.negative?
+      fov, aspect, aperture, focus_distance = [fov, aspect, aperture, focus_distance].map { |value| Float(value) }
+      raise ArgumentError, "camera fov must be between 0 and 180 degrees" unless fov.positive? && fov < 180
+      raise ArgumentError, "camera aspect must be finite and positive" unless aspect.finite? && aspect.positive?
+      raise ArgumentError, "camera focus distance must be finite and positive" unless focus_distance.finite? && focus_distance.positive?
+      raise ArgumentError, "camera aperture must be finite and non-negative" unless aperture.finite? && !aperture.negative?
       theta = fov * Math::PI / 180
       viewport_height = 2 * Math.tan(theta / 2)
       viewport_width = aspect * viewport_height
@@ -476,7 +479,7 @@ module Caustics
   class NoiseTexture
     def initialize(scale: 1, seed: 42)
       @scale = Float(scale)
-      raise ArgumentError, "noise texture scale must be positive" unless @scale.positive?
+      raise ArgumentError, "noise texture scale must be finite and positive" unless @scale.finite? && @scale.positive?
       @noise = Perlin.new(seed)
     end
 

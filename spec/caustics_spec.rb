@@ -66,6 +66,18 @@ RSpec.describe Caustics do
       .to raise_error(ArgumentError, /refractive index must be positive/)
   end
 
+  it "rejects non-finite scene parameters" do
+    center = Caustics::Vec3.new
+    material = Caustics::Material.new
+    expect { Caustics::Sphere.new(center: center, radius: Float::INFINITY, material: material) }.to raise_error(ArgumentError, /radius/)
+    expect { Caustics::Material.new(index: Float::INFINITY) }.to raise_error(ArgumentError, /refractive index/)
+    expect { Caustics::Material.new(fuzz: Float::NAN) }.to raise_error(ArgumentError, /fuzz/)
+    expect { Caustics::NoiseTexture.new(scale: Float::INFINITY) }.to raise_error(ArgumentError, /scale/)
+    %i[aspect focus_distance aperture].each do |name|
+      expect { Caustics::Camera.new(**{ name => Float::INFINITY }) }.to raise_error(ArgumentError, /camera/)
+    end
+  end
+
   it "rejects invalid camera bases" do
     expect { Caustics::Camera.new(from: [0, 0, 0], to: [0, 0, 0]) }
       .to raise_error(ArgumentError, /target must differ/)
